@@ -1,13 +1,11 @@
+import ContextPage from './mission2/ContextPage';
 import './App.css'
-import Todo from './components/Todo';
-import { TodoProvider } from './context/TodoContext';
 
-function App() : Element{
+export default function App(): Element {
   return (
-  <TodoProvider>
-  <Todo/>
-  </TodoProvider>
+    <>
+    <ContextPage/>
+    </>
   );
 }
 
-export default App;
