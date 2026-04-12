@@ -15,7 +15,10 @@ const HomeLayout = () => {
           >
             로그인
           </button>{" "}
-          <button className="text-sm bg-[#ff007f] px-3 py-1 rounded-md hover:bg-[#e60073]">
+          <button
+            className="text-sm bg-[#ff007f] px-3 py-1 rounded-md hover:bg-[#e60073] cursor-pointer"
+            onClick={() => navigate("/signup")}
+          >
             회원가입
           </button>
         </div>
