@@ -4,6 +4,7 @@ import { validateSignin, type UserSignInformation } from "../utils/validate";
 import { postSignin } from "../apis/auth";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
+import googleLogo from "../assets/google.jpg";
 
 const LoginPage = () => {
   const { setItem } = useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
@@ -47,9 +48,10 @@ const LoginPage = () => {
         <h2 className="text-lg font-medium text-white">로그인</h2>
       </div>
 
-      {/* 카카오톡 로그인 버튼 */}
-      <button className="flex items-center justify-center w-full bg-[#FEE500] text-[#191919] rounded-lg py-3 text-sm font-bold hover:bg-[#FADA0A] cursor-pointer">
-        카카오톡 로그인
+      {/* 구글 로그인 버튼 */}
+      <button className="flex items-center justify-center w-full bg-[#ffffff] text-[#191919] rounded-lg py-3 text-sm font-bold hover:bg-[#f0f0f0] cursor-pointer">
+        <img src={googleLogo} alt="Google Logo" className="w-5 h-5 mr-2" />
+        구글 로그인
       </button>
 
       {/* 구분선 */}
