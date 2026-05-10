@@ -44,8 +44,8 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
   const login = async (sighInData: RequestSigninDto) => {
     try {
-      const { data } = (await postSignin(sighInData)) as any;
-
+      const response = await postSignin(sighInData);
+      const data = response.data;
       if (data) {
         const newAccessToken = data.accessToken;
         const newRefreshToken = data.refreshToken;

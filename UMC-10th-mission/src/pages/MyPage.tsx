@@ -26,8 +26,8 @@ const MyPage = () => {
 
   return (
     <div>
-      <h1>{data.data?.name}님 환영합니다.</h1>
-      <h1>{data.data?.email}</h1>
+      <h1>{data?.data?.name}님 환영합니다.</h1>
+      <h1>{data?.data?.email}</h1>
       <button
         className="w-full p-3 rounded-lg mt-2 cursor-pointer text-sm font-bold disabled:bg-gray-700 disabled:text-gray-500 enabled:bg-[#ff007f] enabled:text-white hover:enabled:bg-[#e60073]"
         onClick={handleLogout}

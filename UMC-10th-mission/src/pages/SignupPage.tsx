@@ -74,7 +74,12 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="flex flex-col gap-3 w-[300px]">
+    <form
+      onSubmit={handleSubmit(onSubmit, (errors) =>
+        console.log("문제가 발생했습니다:", errors),
+      )}
+      className="flex flex-col gap-3 w-[300px]"
+    >
       <input
         {...register("name")}
         className={`border w-full p-[10px] rounded-lg bg-[#1a1a1a] text-sm focus:outline-none
@@ -149,13 +154,12 @@ const SignupPage = () => {
 
       <button
         disabled={isSubmitting}
-        type="button"
-        onClick={handleSubmit(onSubmit)}
+        type="submit"
         className="w-full p-3 rounded-lg mt-2 cursor-pointer text-sm font-bold disabled:bg-gray-700 disabled:text-gray-500 enabled:bg-[#ff007f] enabled:text-white hover:enabled:bg-[#e60073]"
       >
         회원가입
       </button>
-    </div>
+    </form>
   );
 };
 
