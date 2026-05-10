@@ -27,6 +27,10 @@ const LoginPage = () => {
     await login(values);
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href =
+      import.meta.env.VITE_SERVER_API_URL + "/v1/auth/google/login";
+  };
   // 오류가 하나라도 있거나, 입력값이 비어있으면 버튼을 비활성화
   const isDisabled =
     Object.values(errors || {}).some((error: string) => error.length > 0) || // 오류가 있으면 true
@@ -46,7 +50,10 @@ const LoginPage = () => {
       </div>
 
       {/* 구글 로그인 버튼 */}
-      <button className="flex items-center justify-center w-full bg-[#ffffff] text-[#191919] rounded-lg py-3 text-sm font-bold hover:bg-[#f0f0f0] cursor-pointer">
+      <button
+        className="flex items-center justify-center w-full bg-[#ffffff] text-[#191919] rounded-lg py-3 text-sm font-bold hover:bg-[#f0f0f0] cursor-pointer"
+        onClick={handleGoogleLogin}
+      >
         <img src={googleLogo} alt="Google Logo" className="w-5 h-5 mr-2" />
         구글 로그인
       </button>
