@@ -22,7 +22,7 @@ export const postSignin = async (
 };
 
 export const getMyInfo = async (): Promise<ResponseMyInfoDto> => {
-  const token = localStorage.getItem("accessToken");
+  const token = localStorage.getItem("accessToken")?.replace(/"/g, "");
   const { data } = await axiosInstance.get("/v1/users/me", {
     headers: {
       Authorization: `Bearer ${token}`,
