@@ -12,32 +12,14 @@ interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
 
 // [수정2] localStorage에서 토큰을 읽는 순수 헬퍼 함수 (Hook 없이 동작)
 const getStoredToken = (key: string): string | null => {
+  const item = window.localStorage.getItem(key);
+
+  if (!item) return null;
+
   try {
-    const item = window.localStorage.getItem(key);
-    if (!item) return null;
-    try {
-      return JSON.parse(item);
-    } catch {
-      return item; // 일반 문자열 토큰은 파싱 없이 반환
-    }
+    return JSON.parse(item);
   } catch {
-    return null;
-  }
-};
-
-const setStoredToken = (key: string, value: string): void => {
-  try {
-    window.localStorage.setItem(key, value);
-  } catch (e) {
-    console.error(e);
-  }
-};
-
-const removeStoredToken = (key: string): void => {
-  try {
-    window.localStorage.removeItem(key);
-  } catch (e) {
-    console.error(e);
+    return item;
   }
 };
 
@@ -77,8 +59,8 @@ axiosInstance.interceptors.response.use(
       // refresh 엔드포인트에서 401이 나면 → 로그아웃 처리
       if (originalRequest.url === "/v1/auth/refresh") {
         // [수정4] useLocalStorage() → removeStoredToken() 으로 교체
-        removeStoredToken(LOCAL_STORAGE_KEY.accessToken);
-        removeStoredToken(LOCAL_STORAGE_KEY.refreshToken);
+        window.localStorage.removeItem(LOCAL_STORAGE_KEY.accessToken);
+        window.localStorage.removeItem(LOCAL_STORAGE_KEY.refreshToken);
         window.location.href = "/login";
         return Promise.reject(error);
       }
@@ -95,8 +77,14 @@ axiosInstance.interceptors.response.use(
           });
 
           // [수정6] useLocalStorage() → setStoredToken() 으로 교체
-          setStoredToken(LOCAL_STORAGE_KEY.accessToken, data.data.accessToken);
-          setStoredToken(LOCAL_STORAGE_KEY.refreshToken, data.data.refreshToken);
+          window.localStorage.setItem(
+            LOCAL_STORAGE_KEY.accessToken,
+            JSON.stringify(data.data.accessToken),
+          );
+          window.localStorage.setItem(
+            LOCAL_STORAGE_KEY.refreshToken,
+            JSON.stringify(data.data.refreshToken),
+          );
 
           return data.data.accessToken;
         })()
@@ -104,8 +92,8 @@ axiosInstance.interceptors.response.use(
             // [수정7] catch 블록에서 에러를 re-throw
             //   - 기존 코드는 아무것도 반환하지 않아 Promise<undefined> → "Bearer undefined"로 재시도
             //   - 명시적으로 에러를 던져서 then 블록이 실행되지 않도록 방지
-            removeStoredToken(LOCAL_STORAGE_KEY.accessToken);
-            removeStoredToken(LOCAL_STORAGE_KEY.refreshToken);
+            window.localStorage.removeItem(LOCAL_STORAGE_KEY.accessToken);
+            window.localStorage.removeItem(LOCAL_STORAGE_KEY.refreshToken);
             return Promise.reject(refreshError);
           })
           .finally(() => {
