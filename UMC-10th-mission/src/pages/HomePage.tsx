@@ -65,12 +65,20 @@ const HomePage = () => {
               </h3>
 
               <div className="flex justify-between items-center w-full mt-1">
+                {/* [수정1] lp.lpld → lp.createdAt
+                    - `lpld`는 타입에 존재하지 않는 오탈자 → 항상 fallback "17 mins ago" 표시
+                    - ResponseLpListDto 타입에서 실제 필드명은 createdAt */}
                 <span className="text-[11px] text-gray-400">
-                  {lp.lpld || "17 mins ago"}
+                  {lp.createdAt
+                    ? new Date(lp.createdAt).toLocaleDateString()
+                    : ""}
                 </span>
 
+                {/* [수정2] lp.likes ?? 0 → lp.likes?.length ?? 0
+                    - lp.likes는 Likes[] 배열 타입이므로 배열을 그대로 렌더링하면 "[object Object]..." 출력
+                    - .length로 개수를 표시해야 함 */}
                 <span className="flex items-center gap-1 text-[11px] text-gray-400">
-                  ♡ {lp.likes ?? 0}
+                  ♡ {lp.likes?.length ?? 0}
                 </span>
               </div>
             </div>
