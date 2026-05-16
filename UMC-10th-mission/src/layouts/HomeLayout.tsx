@@ -1,34 +1,31 @@
 import { Outlet, useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import Sidebar from "../components/Sidebar";
+import { useState } from "react";
 
 const HomeLayout = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
+  const toggleSidebar = () => {
+    setIsSidebarOpen((prev) => !prev);
+  };
   return (
     <div className="min-h-screen flex flex-col bg-[#0b0b0b] text-white font-sans">
-      <nav className="p-4 flex justify-between items-center bg-[#0b0b0b] border-b border-gray-900">
-        <h1 className="text-[#ff007f] font-bold text-xl cursor-pointer">
-          돌려돌려LP판
-        </h1>
-        <div className="flex gap-4">
-          <button
-            className="text-sm hover:text-gray-300 cursor-pointer"
-            onClick={() => navigate("/login")}
-          >
-            로그인
-          </button>{" "}
-          <button
-            className="text-sm bg-[#ff007f] px-3 py-1 rounded-md hover:bg-[#e60073] cursor-pointer"
-            onClick={() => navigate("/signup")}
-          >
-            회원가입
-          </button>
-        </div>
-      </nav>
-      <main className="flex-1 flex items-center justify-center">
-        <Outlet />
-      </main>
-      <footer className="p-4 text-center text-xs text-gray-600">
-        © 2026 돌려돌려LP판.
-      </footer>
+      <Navbar onToggleSidebar={toggleSidebar} />
+      <div className="flex flex-1">
+        {isSidebarOpen && <Sidebar />}
+        <main className="flex-1 flex items-center justify-center mt-10">
+          <Outlet />
+        </main>
+      </div>
+      <button
+        onClick={() => navigate("/")}
+        className="fixed bottom-10 right-10 w-12 h-12 bg-[#ff007f] hover:bg-[#e60073] text-white font-bold text-2xl rounded-full flex items-center justify-center shadow-lg transition-all duration-200 cursor-pointer z-50"
+      >
+        +
+      </button>
+      <Footer />
     </div>
   );
 };
