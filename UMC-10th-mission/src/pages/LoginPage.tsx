@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom"; // 추가된 부분
+import { useLocation, useNavigate } from "react-router-dom"; // 추가된 부분
 import useForm from "../hooks/useForm";
 import { validateSignin, type UserSignInformation } from "../utils/validate";
 import googleLogo from "../assets/google.jpg";
@@ -7,12 +7,15 @@ import { useEffect } from "react";
 
 const LoginPage = () => {
   const { login, accessToken } = useAuth();
-  const navigate = useNavigate(); // 추가된 부분
+  const navigate = useNavigate();
+  const location = useLocation() as any;
+
+  const from = location.state?.from || "/";
   useEffect(() => {
     if (accessToken) {
-      navigate("/");
+      navigate(from, { replace: true });
     }
-  }, [navigate, accessToken]);
+  }, [navigate, accessToken, from]);
 
   const { values, errors, touched, getInputProps } =
     useForm<UserSignInformation>({

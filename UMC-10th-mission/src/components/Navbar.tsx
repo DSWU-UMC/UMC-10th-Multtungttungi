@@ -1,4 +1,4 @@
-import { data, Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getMyInfo } from "../apis/auth";
 import { useEffect, useState } from "react";
@@ -8,20 +8,23 @@ interface NavbarProps {
   onToggleSidebar: () => void;
 }
 const Navbar = ({ onToggleSidebar }: NavbarProps) => {
-  const { accessToken } = useAuth();
+  const { accessToken, logout } = useAuth();
   const navigate = useNavigate();
-  const { logout } = useAuth();
-  const [data, setData] = useState<ResponseMyInfoDto>();
+  const [myInfo, setMyInfo] = useState<ResponseMyInfoDto | null>(null);
   useEffect(() => {
-    const getData = async () => {
-      const response = await getMyInfo();
-      console.log(response);
+    if (!accessToken) return;
 
-      setData(response);
+    const getData = async () => {
+      try {
+        const response = await getMyInfo();
+        setMyInfo(response);
+      } catch (e) {
+        console.error("사용자 정보 조회 실패", e);
+      }
     };
 
     getData();
-  }, []);
+  }, [accessToken]);
 
   const handleLogout = async () => {
     await logout();
@@ -44,9 +47,9 @@ const Navbar = ({ onToggleSidebar }: NavbarProps) => {
             <path
               fill="none"
               stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="4"
               d="M7.95 11.95h32m-32 12h32m-32 12h32"
             />
           </svg>
@@ -79,7 +82,7 @@ const Navbar = ({ onToggleSidebar }: NavbarProps) => {
             className="text-sm hover:text-gray-300 cursor-pointer"
             onClick={() => navigate("/my")}
           >
-            {data?.data.name}님 환영합니다.
+            {myInfo?.data.name}님 환영합니다.
           </button>
 
           <button

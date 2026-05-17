@@ -1,11 +1,22 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import useGetLpDetail from "../hooks/queries/useGetLpDetail";
+import { useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const LpDetailPage = () => {
   const { lpid } = useParams<{ lpid: string }>();
   const navigate = useNavigate();
+  const location = useLocation() as any;
+  const { accessToken } = useAuth();
+  const isLoggedIn = !!accessToken;
+  useEffect(() => {
+    if (!isLoggedIn) {
+      alert("로그인이 필요한 서비스입니다.");
+      navigate("/login", { state: { from: location.pathname } });
+    }
+  }, [isLoggedIn, navigate, location.pathname]);
 
-  const { data: lp, isPending, isError, refetch } = useGetLpDetail({ lpid });
+  const { data: lp, isPending, isError } = useGetLpDetail({ lpid });
 
   if (isPending) {
     return <div className={"mt-20"}>Loading...</div>;
