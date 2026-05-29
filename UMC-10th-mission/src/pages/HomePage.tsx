@@ -1,16 +1,39 @@
-import { useState } from "react";
-import useGetLpList from "../hooks/queries/useGetLpList";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import useGetInfiniteLpList from "../hooks/queries/useGetInfiniteLpList";
+import { useInView } from "react-intersection-observer";
+import LpCard from "../components/LpCard/LpCard";
+import LpCardSkeletonList from "../components/LpCard/LpCardSkeletonList";
 
 const HomePage = () => {
-  const [search] = useState("");
+  const [search, setSearch] = useState("");
   const [order, setOrder] = useState<"desc" | "asc">("desc");
-  const navigate = useNavigate();
-  const {
+  /*const {
     data: lpList,
     isPending,
     isError,
-  } = useGetLpList({ search, order, limit: 20, cursor: undefined });
+  } = useGetLpList({ search, order, limit: 50, cursor: undefined });*/
+
+  const {
+    data: lpList,
+    isFetching,
+    hasNextPage,
+    isPending,
+    fetchNextPage,
+    isError,
+  } = useGetInfiniteLpList(5, search, order);
+
+  // ref, inView
+  // ref -> 특정한 HTML요소를 감시할 수 있다.
+  // inView -> 그 요소가 화면에 보이면 true
+  const { ref, inView } = useInView({
+    threshold: 0,
+  });
+
+  useEffect(() => {
+    if (inView) {
+      !isFetching && hasNextPage && fetchNextPage();
+    }
+  }, [inView, isFetching, hasNextPage, fetchNextPage]);
 
   if (isPending) {
     return <div className={"mt-20"}>Loading...</div>;
@@ -22,6 +45,8 @@ const HomePage = () => {
 
   return (
     <div className="w-full max-w-6xl px-4 py-6 bg-[#0b0b0b] mt-10">
+      <input value={search} onChange={(e) => setSearch(e.target.value)} />
+
       <div className="flex justify-end mb-6">
         <div className="bg-black p-1 rounded-md flex gap-1 border border-gray-900">
           <button
@@ -47,46 +72,16 @@ const HomePage = () => {
         </div>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-        {lpList?.map((lp: any) => (
-          <div
-            key={lp.id}
-            onClick={() => navigate(`/lp/${lp.id}`)}
-            className="group relative aspect-square rounded-md bg-[#121212] overflow-hidden border border-gray-900 shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer"
-          >
-            <img
-              src={
-                lp.thumbnail
-                  ? `http://localhost:3000${lp.thumbnail}`
-                  : `https://picsum.photos/200?random=${lp.id}`
-              }
-              alt={lp.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src =
-                  `https://picsum.photos/200?random=${lp.id}`;
-              }}
-            />
-            console.log(lp.thumbnail);
-            <div className="absolute inset-0 bg-black/70 flex flex-col justify-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ">
-              <h3 className="font-bold text-sm text-white line-clamp-2 mb-1">
-                {lp.title}
-              </h3>
-
-              <div className="flex justify-between items-center w-full mt-1">
-                <span className="text-[11px] text-gray-400">
-                  {lp.createdAt
-                    ? new Date(lp.createdAt).toLocaleDateString()
-                    : ""}
-                </span>
-
-                <span className="flex items-center gap-1 text-[11px] text-gray-400">
-                  ♡ {lp.likes?.length ?? 0}
-                </span>
-              </div>
-            </div>
-          </div>
-        ))}
+        {isPending && <LpCardSkeletonList count={10} />}
+        {lpList?.pages
+          ?.map((page) => page.data.data)
+          ?.flat()
+          ?.map((lp) => (
+            <LpCard key={lp.id} lp={lp} />
+          ))}
+        {isFetching && <LpCardSkeletonList count={20} />}
       </div>
+      <div ref={ref} className="h-2"></div>
     </div>
   );
 };

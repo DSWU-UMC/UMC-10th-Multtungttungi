@@ -22,7 +22,7 @@ function useGetLpDetail({ lpid }: UseGetLpDetailProps) {
       accessToken !== "null" &&
       accessToken !== "undefined",
 
-    select: (data) => data.data.data,
+    select: (data) => data.data,
   });
 }
 

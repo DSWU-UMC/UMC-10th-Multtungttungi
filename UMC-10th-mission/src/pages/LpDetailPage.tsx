@@ -9,14 +9,17 @@ const LpDetailPage = () => {
   const location = useLocation() as any;
   const { accessToken } = useAuth();
   const isLoggedIn = !!accessToken;
+  const { data: lp, isPending, isError } = useGetLpDetail({ lpid });
+
   useEffect(() => {
+    if (lp) {
+      console.log("백엔드에서 받아온 LP 상세 데이터:", lp);
+    }
     if (!isLoggedIn) {
       alert("로그인이 필요한 서비스입니다.");
       navigate("/login", { state: { from: location.pathname } });
     }
   }, [isLoggedIn, navigate, location.pathname]);
-
-  const { data: lp, isPending, isError } = useGetLpDetail({ lpid });
 
   if (isPending) {
     return <div className={"mt-20"}>Loading...</div>;
@@ -32,7 +35,7 @@ const LpDetailPage = () => {
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold text-gray-200">
-              {lp?.nickname || "익명회원"}
+              {lp?.name || "익명회원"}
             </span>
           </div>
           <span className="text-xs text-gray-500">
